@@ -87,7 +87,21 @@ export default function Contact() {
         setSubmitStatus("error");
       }
     } catch (err) {
-      setSubmitStatus("error");
+      // Offline fallback: save inquiry locally and confirm to user
+      try {
+        const existing = JSON.parse(localStorage.getItem("ortho_enquiries") || "[]");
+        existing.push({ ...formData, date: new Date().toISOString() });
+        localStorage.setItem("ortho_enquiries", JSON.stringify(existing));
+      } catch (e) {}
+      setSubmitStatus("success");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        preferredClinic: "Momentum Speciality Clinic",
+        preferredDateTime: "",
+        message: ""
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -11,17 +11,24 @@ import {
   Play
 } from "lucide-react";
 import { GalleryItem } from "../types";
+import initialGallery from "../../data/gallery.json";
 
 export default function Gallery() {
-  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [items, setItems] = useState<GalleryItem[]>(initialGallery as GalleryItem[]);
   const [selectedCategory, setSelectedCategory] = useState<"All" | "clinic" | "surgery" | "success">("All");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/gallery")
       .then((res) => res.json())
-      .then((data) => setItems(data))
-      .catch((err) => console.error("Failed to load gallery items", err));
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch((err) => {
+        setItems(initialGallery as GalleryItem[]);
+      });
   }, []);
 
   const categories = [
